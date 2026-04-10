@@ -1,7 +1,8 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const cors = require("cors");
+
 require("dotenv").config();
+const cors = require("cors");
 
 const authRoutes = require("./routes/auth.routes");
 const accountRoutes = require("./routes/account.routes");
@@ -10,7 +11,13 @@ const transactionRoutes = require("./routes/transactions.routes");
 const app = express();
 
 // Middlewares
-app.use(cors());
+app.use(
+  cors({
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  }),
+);
 app.use(express.json());
 
 // Conexión a MongoDB
