@@ -89,5 +89,34 @@ router.post("/login", async (req, res) => {
     res.status(500).json({ error: "Error interno del servidor." });
   }
 });
+// DELETE /api/auth/eliminar-cuenta
+router.delete("/eliminar-cuenta", async (req, res) => {
+  try {
+    const { usuario, contrasena } = req.body;
+
+    if (!usuario || !contrasena) {
+      return res
+        .status(400)
+        .json({ error: "Usuario y contraseña son requeridos." });
+    }
+
+    const usuarioEncontrado = await User.findOne({ usuario });
+    if (!usuarioEncontrado) {
+      return res.status(401).json({ error: "Credenciales incorrectas." });
+    }
+
+    const contrasenaCorrecta =
+      await usuarioEncontrado.compararContrasena(contrasena);
+    if (!contrasenaCorrecta) {
+      return res.status(401).json({ error: "Credenciales incorrectas." });
+    }
+
+    await User.findByIdAndDelete(usuarioEncontrado._id);
+
+    res.json({ mensaje: "Cuenta eliminada correctamente." });
+  } catch (error) {
+    res.status(500).json({ error: "Error al eliminar la cuenta." });
+  }
+});
 
 module.exports = router;
